@@ -15,7 +15,7 @@ document.addEventListener("visibilitychange", () => {
   document.title = document.hidden ? "Sizi bekliyoruz!" : originalTitle;
 });
 
-// Dark mode toggle — bu sitede varsayılan tema karanlık (kayıtlı tercih yoksa sistem ayarını değil karanlığı esas alır)
+// Dark mode toggle
 const themeToggle = document.getElementById("themeToggle");
 const root = document.documentElement;
 
@@ -25,7 +25,8 @@ function applyTheme(theme) {
 }
 
 const savedTheme = localStorage.getItem("theme");
-applyTheme(savedTheme || "dark");
+const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+applyTheme(savedTheme || (systemPrefersDark ? "dark" : "light"));
 
 themeToggle.addEventListener("click", () => {
   const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
@@ -65,7 +66,7 @@ function fireConfetti(originEl) {
   const rect = originEl.getBoundingClientRect();
   const originX = rect.left + rect.width / 2;
   const originY = rect.top;
-  const colors = ["#c9a227", "#4d7a54", "#ece7db", "#8a6d1d"];
+  const colors = ["#1f3a3d", "#8a6d1d", "#d7e0df", "#4f8c86"];
 
   for (let i = 0; i < 24; i++) {
     const piece = document.createElement("div");
@@ -79,20 +80,6 @@ function fireConfetti(originEl) {
     document.body.appendChild(piece);
     setTimeout(() => piece.remove(), 1200);
   }
-}
-
-// Hizmetler sayfası: kategori sekmeleri (tab) arasında geçiş
-const serviceTabs = document.querySelectorAll(".service-tab");
-const servicePanels = document.querySelectorAll(".service-panel");
-
-if (serviceTabs.length) {
-  serviceTabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      const target = tab.dataset.tab;
-      serviceTabs.forEach((t) => t.classList.toggle("active", t === tab));
-      servicePanels.forEach((p) => p.classList.toggle("active", p.dataset.panel === target));
-    });
-  });
 }
 
 // Hizmet seçimi ("sepete ekle" tarzı) — localStorage üzerinden sayfalar arası taşınır
@@ -110,7 +97,7 @@ function setSelectedServices(list) {
   localStorage.setItem(SELECTED_SERVICES_KEY, JSON.stringify(list));
 }
 
-// Hizmetler sayfası: kartlara seç/kaldır butonları
+// Hizmetler sayfası: satırlara seç/kaldır butonları
 const serviceCards = document.querySelectorAll(".service-card");
 const cartBar = document.getElementById("cartBar");
 const cartBarText = document.getElementById("cartBarText");
@@ -213,5 +200,78 @@ if (contactForm) {
       submitBtn.disabled = false;
       submitBtn.textContent = originalLabel;
     }, 700);
+  });
+}
+
+// Saç Stilleri sayfası: "Bana En Uygun Saçı Bul" testi
+// Not: Bu bir eğlence/demo aracıdır, bilimsel bir öneri motoru değildir —
+// girilen kriterlere göre deterministik ama "kişiye özel" hissettiren bir sonuç üretir.
+const quizForm = document.getElementById("quizForm");
+
+if (quizForm) {
+  const HAIRSTYLES = [
+    {
+      name: "Modern Fade",
+      desc: "Yanlarda kademeli inceltme, üstte hacimli doku — her ortamda güçlü ve derli toplu bir görünüm.",
+    },
+    {
+      name: "Klasik Yandan Ayrık",
+      desc: "Zamansız ve kurumsal, her yaşta güven veren, bakımı kolay bir kesim.",
+    },
+    {
+      name: "Undercut",
+      desc: "Sert kontrastlı yanlar, üstte uzun ve şekillendirilebilir saç — karakterli ve dikkat çekici.",
+    },
+    {
+      name: "Buzz Cut",
+      desc: "Minimum bakım, maksimum pratiklik — aktif ve yoğun tempolu bir yaşam tarzına uygun.",
+    },
+    {
+      name: "Pompadour",
+      desc: "Öne ve yukarı taranan hacimli üst kısım — özgüvenli ve iddialı bir duruş.",
+    },
+    {
+      name: "Slick Back",
+      desc: "Geriye taranmış, parlak ve düzgün — akşam davetleri ve özel günler için ideal.",
+    },
+    {
+      name: "Textured Crop",
+      desc: "Kısa, dokulu ve dağınık şekillendirilmiş üst kısım — genç ve rahat bir tarz.",
+    },
+    {
+      name: "Quiff",
+      desc: "Öne doğru kaldırılmış hacimli ön kısım — yaratıcı ve modaya duyarlı bir seçim.",
+    },
+  ];
+
+  const quizResult = document.getElementById("quizResult");
+  const quizResultName = document.getElementById("quizResultName");
+  const quizResultDesc = document.getElementById("quizResultDesc");
+  const quizResultWhy = document.getElementById("quizResultWhy");
+
+  quizForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const age = Number(quizForm.age.value) || 25;
+    const height = Number(quizForm.height.value) || 175;
+    const weight = Number(quizForm.weight.value) || 75;
+    const season = quizForm.season.value;
+    const sector = quizForm.sector.value;
+    const hairType = quizForm.hairType.value;
+
+    const seasonIndex = ["İlkbahar", "Yaz", "Sonbahar", "Kış"].indexOf(season);
+    const sectorIndex = ["Kurumsal / Ofis", "Yaratıcı / Serbest", "Spor / Aktif", "Gece Hayatı / Sosyal", "Öğrenci"].indexOf(sector);
+    const hairTypeIndex = ["Düz", "Dalgalı", "Kıvırcık"].indexOf(hairType);
+
+    const score =
+      age * 3 + height * 2 + weight + seasonIndex * 11 + sectorIndex * 17 + hairTypeIndex * 23;
+    const style = HAIRSTYLES[score % HAIRSTYLES.length];
+
+    quizResultName.textContent = style.name;
+    quizResultDesc.textContent = style.desc;
+    quizResultWhy.textContent = `${age} yaşında, ${height} cm boyunda, ${season.toLowerCase()} mevsiminde ${sector.toLowerCase()} bir ortamda öne çıkmak isteyen, ${hairType.toLowerCase()} saç yapısına sahip biri için hesaplanan en uygun stil budur.`;
+
+    quizResult.classList.add("visible");
+    fireConfetti(quizForm.querySelector(".quiz-submit"));
+    quizResult.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 }

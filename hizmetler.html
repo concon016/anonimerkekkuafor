@@ -21,7 +21,8 @@
 <script>
   (function () {
     var saved = localStorage.getItem("theme");
-    document.documentElement.setAttribute("data-theme", saved || "dark");
+    var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.setAttribute("data-theme", saved || (prefersDark ? "dark" : "light"));
   })();
 </script>
 </head>
@@ -29,9 +30,10 @@
 
 <header class="nav" id="nav">
   <div class="nav-inner">
-    <a href="index.html" class="logo"><span class="logo-badge">A</span>Anonim <span class="logo-dim">Erkek Kuaförü</span></a>
+    <a href="index.html" class="logo">Anonim <span class="logo-dim">Erkek Kuaförü</span></a>
     <nav class="nav-links">
       <a href="hizmetler.html" class="active">Hizmetler</a>
+      <a href="sacstilleri.html">Saç Stilleri</a>
       <a href="berberimiz.html">Berberimiz</a>
       <a href="ustalarimiz.html">Ustalarımız</a>
       <a href="hakkimizda.html">Hakkımızda</a>
@@ -40,7 +42,7 @@
       <a href="iletisim.html">İletişim</a>
     </nav>
     <div class="nav-actions">
-      <button class="theme-toggle" id="themeToggle" role="switch" aria-checked="true" aria-label="Karanlık modu aç/kapat">
+      <button class="theme-toggle" id="themeToggle" role="switch" aria-checked="false" aria-label="Karanlık modu aç/kapat">
         <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
       </button>
       <a href="iletisim.html" class="nav-cta">Randevu Al</a>
@@ -51,6 +53,7 @@
   </div>
   <nav class="nav-mobile" id="navMobile">
     <a href="hizmetler.html" class="active">Hizmetler</a>
+    <a href="sacstilleri.html">Saç Stilleri</a>
     <a href="berberimiz.html">Berberimiz</a>
     <a href="ustalarimiz.html">Ustalarımız</a>
     <a href="hakkimizda.html">Hakkımızda</a>
@@ -65,20 +68,13 @@
   <section class="services" id="hizmetler">
     <div class="section-head reveal">
       <span class="eyebrow">Hizmetlerimiz</span>
-      <h2>Kategoriden seçin.</h2>
-      <p>Bir kategoriye tıklayın, ilgilendiğiniz hizmetleri işaretleyin, ardından İletişim sayfasından randevu talebinizi bırakın.</p>
+      <h2>Size uygun bakımı seçin.</h2>
+      <p>İlgilendiğiniz hizmetleri işaretleyin, ardından İletişim sayfasından randevu talebinizi bırakın.</p>
     </div>
 
-    <div class="service-tabs reveal">
-      <button type="button" class="service-tab active" data-tab="kesim">Saç Kesimi</button>
-      <button type="button" class="service-tab" data-tab="sakal">Sakal &amp; Tıraş</button>
-      <button type="button" class="service-tab" data-tab="cilt">Cilt &amp; Bakım</button>
-      <button type="button" class="service-tab" data-tab="renk">Renklendirme</button>
-      <button type="button" class="service-tab" data-tab="paket">Paket Hizmetler</button>
-    </div>
-
-    <div class="service-panel active" data-panel="kesim">
-      <div class="service-grid">
+    <div class="service-category reveal">
+      <h3 class="service-category-title">Saç Kesimi</h3>
+      <div class="service-list">
         <div class="service-card">
           <div class="service-card-info">
             <h3>Klasik Erkek Kesimi</h3>
@@ -117,8 +113,9 @@
       </div>
     </div>
 
-    <div class="service-panel" data-panel="sakal">
-      <div class="service-grid">
+    <div class="service-category reveal">
+      <h3 class="service-category-title">Sakal &amp; Tıraş</h3>
+      <div class="service-list">
         <div class="service-card">
           <div class="service-card-info">
             <h3>Klasik Ustura Tıraşı</h3>
@@ -157,8 +154,9 @@
       </div>
     </div>
 
-    <div class="service-panel" data-panel="cilt">
-      <div class="service-grid">
+    <div class="service-category reveal">
+      <h3 class="service-category-title">Cilt &amp; Bakım</h3>
+      <div class="service-list">
         <div class="service-card">
           <div class="service-card-info">
             <h3>Yüz Bakımı</h3>
@@ -197,8 +195,9 @@
       </div>
     </div>
 
-    <div class="service-panel" data-panel="renk">
-      <div class="service-grid">
+    <div class="service-category reveal">
+      <h3 class="service-category-title">Renklendirme</h3>
+      <div class="service-list">
         <div class="service-card">
           <div class="service-card-info">
             <h3>Saç Boyama</h3>
@@ -237,8 +236,9 @@
       </div>
     </div>
 
-    <div class="service-panel" data-panel="paket">
-      <div class="service-grid">
+    <div class="service-category reveal">
+      <h3 class="service-category-title">Paket Hizmetler</h3>
+      <div class="service-list">
         <div class="service-card">
           <div class="service-card-info">
             <h3>Damat Tıraşı &amp; Bakım Paketi</h3>

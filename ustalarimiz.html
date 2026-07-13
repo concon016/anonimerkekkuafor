@@ -21,7 +21,8 @@
 <script>
   (function () {
     var saved = localStorage.getItem("theme");
-    document.documentElement.setAttribute("data-theme", saved || "dark");
+    var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.setAttribute("data-theme", saved || (prefersDark ? "dark" : "light"));
   })();
 </script>
 </head>
@@ -29,9 +30,10 @@
 
 <header class="nav" id="nav">
   <div class="nav-inner">
-    <a href="index.html" class="logo"><span class="logo-badge">A</span>Anonim <span class="logo-dim">Erkek Kuaförü</span></a>
+    <a href="index.html" class="logo">Anonim <span class="logo-dim">Erkek Kuaförü</span></a>
     <nav class="nav-links">
       <a href="hizmetler.html">Hizmetler</a>
+      <a href="sacstilleri.html">Saç Stilleri</a>
       <a href="berberimiz.html">Berberimiz</a>
       <a href="ustalarimiz.html" class="active">Ustalarımız</a>
       <a href="hakkimizda.html">Hakkımızda</a>
@@ -40,7 +42,7 @@
       <a href="iletisim.html">İletişim</a>
     </nav>
     <div class="nav-actions">
-      <button class="theme-toggle" id="themeToggle" role="switch" aria-checked="true" aria-label="Karanlık modu aç/kapat">
+      <button class="theme-toggle" id="themeToggle" role="switch" aria-checked="false" aria-label="Karanlık modu aç/kapat">
         <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
       </button>
       <a href="iletisim.html" class="nav-cta">Randevu Al</a>
@@ -51,6 +53,7 @@
   </div>
   <nav class="nav-mobile" id="navMobile">
     <a href="hizmetler.html">Hizmetler</a>
+    <a href="sacstilleri.html">Saç Stilleri</a>
     <a href="berberimiz.html">Berberimiz</a>
     <a href="ustalarimiz.html" class="active">Ustalarımız</a>
     <a href="hakkimizda.html">Hakkımızda</a>
@@ -73,31 +76,25 @@
         <div class="team-photo">
           <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&amp;w=400&amp;auto=format&amp;fit=crop" alt="Emre Yıldız" loading="lazy">
         </div>
-        <div>
-          <div class="team-name">Emre Yıldız</div>
-          <div class="team-role">Kurucu &amp; Baş Berber</div>
-          <p class="team-bio">12 yılı aşkın deneyimiyle klasik ve modern kesim tekniklerinde uzmanlaşmış, salonun kurucusu.</p>
-        </div>
+        <div class="team-name">Emre Yıldız</div>
+        <div class="team-role">Kurucu &amp; Baş Berber</div>
+        <p class="team-bio">12 yılı aşkın deneyimiyle klasik ve modern kesim tekniklerinde uzmanlaşmış, salonun kurucusu.</p>
       </div>
       <div class="team-card">
         <div class="team-photo">
           <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&amp;w=400&amp;auto=format&amp;fit=crop" alt="Kaan Aydemir" loading="lazy">
         </div>
-        <div>
-          <div class="team-name">Kaan Aydemir</div>
-          <div class="team-role">Sakal &amp; Tıraş Uzmanı</div>
-          <p class="team-bio">Ustura tıraşı ve sakal şekillendirmede uzman, her yüz tipine özel çözümler sunuyor.</p>
-        </div>
+        <div class="team-name">Kaan Aydemir</div>
+        <div class="team-role">Sakal &amp; Tıraş Uzmanı</div>
+        <p class="team-bio">Ustura tıraşı ve sakal şekillendirmede uzman, her yüz tipine özel çözümler sunuyor.</p>
       </div>
       <div class="team-card">
         <div class="team-photo">
           <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&amp;w=400&amp;auto=format&amp;fit=crop" alt="Barış Koç" loading="lazy">
         </div>
-        <div>
-          <div class="team-name">Barış Koç</div>
-          <div class="team-role">Genç Nesil Stilist</div>
-          <p class="team-bio">Fade ve undercut gibi modern kesimlerde detaycı yaklaşımıyla öne çıkıyor.</p>
-        </div>
+        <div class="team-name">Barış Koç</div>
+        <div class="team-role">Genç Nesil Stilist</div>
+        <p class="team-bio">Fade ve undercut gibi modern kesimlerde detaycı yaklaşımıyla öne çıkıyor.</p>
       </div>
     </div>
   </section>

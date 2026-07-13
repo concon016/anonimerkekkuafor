@@ -21,7 +21,8 @@
 <script>
   (function () {
     var saved = localStorage.getItem("theme");
-    document.documentElement.setAttribute("data-theme", saved || "dark");
+    var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.setAttribute("data-theme", saved || (prefersDark ? "dark" : "light"));
   })();
 </script>
 </head>
@@ -29,9 +30,10 @@
 
 <header class="nav" id="nav">
   <div class="nav-inner">
-    <a href="index.html" class="logo"><span class="logo-badge">A</span>Anonim <span class="logo-dim">Erkek Kuaförü</span></a>
+    <a href="index.html" class="logo">Anonim <span class="logo-dim">Erkek Kuaförü</span></a>
     <nav class="nav-links">
       <a href="hizmetler.html">Hizmetler</a>
+      <a href="sacstilleri.html">Saç Stilleri</a>
       <a href="berberimiz.html">Berberimiz</a>
       <a href="ustalarimiz.html">Ustalarımız</a>
       <a href="hakkimizda.html">Hakkımızda</a>
@@ -40,7 +42,7 @@
       <a href="iletisim.html" class="active">İletişim</a>
     </nav>
     <div class="nav-actions">
-      <button class="theme-toggle" id="themeToggle" role="switch" aria-checked="true" aria-label="Karanlık modu aç/kapat">
+      <button class="theme-toggle" id="themeToggle" role="switch" aria-checked="false" aria-label="Karanlık modu aç/kapat">
         <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
       </button>
       <a href="iletisim.html" class="nav-cta">Randevu Al</a>
@@ -51,6 +53,7 @@
   </div>
   <nav class="nav-mobile" id="navMobile">
     <a href="hizmetler.html">Hizmetler</a>
+    <a href="sacstilleri.html">Saç Stilleri</a>
     <a href="berberimiz.html">Berberimiz</a>
     <a href="ustalarimiz.html">Ustalarımız</a>
     <a href="hakkimizda.html">Hakkımızda</a>
