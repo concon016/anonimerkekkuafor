@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Berberimiz — Anonim Erkek Kuaförü</title>
+<meta name="description" content="Anonim Erkek Kuaförü'nün klasik berber ruhunu modern bir mekanla buluşturan salonunu tanıyın.">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://anonimerkekkuafor.vercel.app/berberimiz.html">
+<meta property="og:title" content="Berberimiz — Anonim Erkek Kuaförü">
+<meta property="og:description" content="Klasik berber ruhu, modern konfor.">
+<meta property="og:image" content="https://anonimerkekkuafor.vercel.app/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/favicon-64.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/logo-512.png">
+<link rel="stylesheet" href="style.css">
+<script>
+  (function () {
+    var saved = localStorage.getItem("theme");
+    document.documentElement.setAttribute("data-theme", saved || "dark");
+  })();
+</script>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><span class="logo-badge">A</span>Anonim <span class="logo-dim">Erkek Kuaförü</span></a>
+    <nav class="nav-links">
+      <a href="hizmetler.html">Hizmetler</a>
+      <a href="berberimiz.html" class="active">Berberimiz</a>
+      <a href="ustalarimiz.html">Ustalarımız</a>
+      <a href="hakkimizda.html">Hakkımızda</a>
+      <a href="yorumlar.html">Yorumlar</a>
+      <a href="sss.html">SSS</a>
+      <a href="iletisim.html">İletişim</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" role="switch" aria-checked="true" aria-label="Karanlık modu aç/kapat">
+        <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
+      </button>
+      <a href="iletisim.html" class="nav-cta">Randevu Al</a>
+    </div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menüyü aç">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="nav-mobile" id="navMobile">
+    <a href="hizmetler.html">Hizmetler</a>
+    <a href="berberimiz.html" class="active">Berberimiz</a>
+    <a href="ustalarimiz.html">Ustalarımız</a>
+    <a href="hakkimizda.html">Hakkımızda</a>
+    <a href="yorumlar.html">Yorumlar</a>
+    <a href="sss.html">SSS</a>
+    <a href="iletisim.html">İletişim</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="gallery" id="berberimiz">
+    <div class="section-head reveal">
+      <span class="eyebrow">Berberimiz</span>
+      <h2>Klasik ruh, modern konfor.</h2>
+      <p>Salonumuz, geleneksel berber atmosferini modern bir deneyimle bir araya getirmek için tasarlandı.</p>
+    </div>
+    <div class="space-grid reveal">
+      <div class="space-card">
+        <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Berber salonu karşılama alanı" loading="lazy">
+        <span>Karşılama Alanı</span>
+      </div>
+      <div class="space-card">
+        <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Kesim koltukları" loading="lazy">
+        <span>Kesim Alanı</span>
+      </div>
+      <div class="space-card">
+        <img src="https://images.unsplash.com/photo-1622287162716-f311baa1a2b3?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Sakal ve tıraş alanı" loading="lazy">
+        <span>Sakal &amp; Tıraş Köşesi</span>
+      </div>
+    </div>
+
+    <div class="location-note reveal">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      <span>Kadıköy, İstanbul — bu bölgede hizmet verebiliyoruz.</span>
+    </div>
+
+    <div class="map-embed reveal">
+      <iframe src="https://www.google.com/maps?q=Kadikoy,+Istanbul&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Kadıköy, İstanbul konumu"></iframe>
+      <a href="https://www.google.com/maps/dir/?api=1&amp;destination=Kadikoy,+Istanbul" target="_blank" rel="noopener" class="map-overlay" aria-label="Google Haritalar'da yol tarifi al"></a>
+      <span class="map-cta">Yol Tarifi Al →</span>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>&copy; 2026 Anonim Erkek Kuaförü</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

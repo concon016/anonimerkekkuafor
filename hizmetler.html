@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hizmetlerimiz — Anonim Erkek Kuaförü</title>
+<meta name="description" content="Saç kesimi, sakal &amp; tıraş, cilt bakımı, renklendirme ve paket hizmetlerimiz — seçin, randevu talebinizi bırakın.">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://anonimerkekkuafor.vercel.app/hizmetler.html">
+<meta property="og:title" content="Hizmetlerimiz — Anonim Erkek Kuaförü">
+<meta property="og:description" content="İlgilendiğiniz hizmetleri seçin, randevu talebinizi kolayca bırakın.">
+<meta property="og:image" content="https://anonimerkekkuafor.vercel.app/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/favicon-64.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/logo-512.png">
+<link rel="stylesheet" href="style.css">
+<script>
+  (function () {
+    var saved = localStorage.getItem("theme");
+    document.documentElement.setAttribute("data-theme", saved || "dark");
+  })();
+</script>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><span class="logo-badge">A</span>Anonim <span class="logo-dim">Erkek Kuaförü</span></a>
+    <nav class="nav-links">
+      <a href="hizmetler.html" class="active">Hizmetler</a>
+      <a href="berberimiz.html">Berberimiz</a>
+      <a href="ustalarimiz.html">Ustalarımız</a>
+      <a href="hakkimizda.html">Hakkımızda</a>
+      <a href="yorumlar.html">Yorumlar</a>
+      <a href="sss.html">SSS</a>
+      <a href="iletisim.html">İletişim</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" role="switch" aria-checked="true" aria-label="Karanlık modu aç/kapat">
+        <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
+      </button>
+      <a href="iletisim.html" class="nav-cta">Randevu Al</a>
+    </div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menüyü aç">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="nav-mobile" id="navMobile">
+    <a href="hizmetler.html" class="active">Hizmetler</a>
+    <a href="berberimiz.html">Berberimiz</a>
+    <a href="ustalarimiz.html">Ustalarımız</a>
+    <a href="hakkimizda.html">Hakkımızda</a>
+    <a href="yorumlar.html">Yorumlar</a>
+    <a href="sss.html">SSS</a>
+    <a href="iletisim.html">İletişim</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="services" id="hizmetler">
+    <div class="section-head reveal">
+      <span class="eyebrow">Hizmetlerimiz</span>
+      <h2>Kategoriden seçin.</h2>
+      <p>Bir kategoriye tıklayın, ilgilendiğiniz hizmetleri işaretleyin, ardından İletişim sayfasından randevu talebinizi bırakın.</p>
+    </div>
+
+    <div class="service-tabs reveal">
+      <button type="button" class="service-tab active" data-tab="kesim">Saç Kesimi</button>
+      <button type="button" class="service-tab" data-tab="sakal">Sakal &amp; Tıraş</button>
+      <button type="button" class="service-tab" data-tab="cilt">Cilt &amp; Bakım</button>
+      <button type="button" class="service-tab" data-tab="renk">Renklendirme</button>
+      <button type="button" class="service-tab" data-tab="paket">Paket Hizmetler</button>
+    </div>
+
+    <div class="service-panel active" data-panel="kesim">
+      <div class="service-grid">
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Klasik Erkek Kesimi</h3>
+            <p>Yüz hatlarınıza uygun makas kesimi ve şekillendirme.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">30 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Makine Kesim (Fade/Undercut)</h3>
+            <p>Keskin geçişli modern fade ve undercut teknikleri.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">35 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Çocuk Kesimi</h3>
+            <p>Çocuklar için sabırlı ve özenli kesim hizmeti.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">25 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Saç Yıkama &amp; Fön</h3>
+            <p>Kesim sonrası rahatlatıcı yıkama ve şekillendirici fön.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">15 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Saç Şekillendirme (Styling)</h3>
+            <p>Özel bir gün için ürünle destekli profesyonel şekillendirme.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">20 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="service-panel" data-panel="sakal">
+      <div class="service-grid">
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Klasik Ustura Tıraşı</h3>
+            <p>Sıcak havlu eşliğinde geleneksel ustura tıraşı.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">30 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Sakal Şekillendirme</h3>
+            <p>Yüz yapınıza uygun sakal kesimi ve kontur çizimi.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">25 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Sakal Bakımı &amp; Yağı</h3>
+            <p>Yumuşatıcı ve besleyici sakal yağı uygulaması.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">15 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Bıyık Düzeltme</h3>
+            <p>İnce işçilikle bıyık kesimi ve netleştirme.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">10 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Sıcak Havlu Tıraşı</h3>
+            <p>Gözenekleri açan sıcak havlu eşliğinde rahatlatıcı tıraş.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">35 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="service-panel" data-panel="cilt">
+      <div class="service-grid">
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Yüz Bakımı</h3>
+            <p>Erkek cildine özel temizlik ve nemlendirme bakımı.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">30 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Cilt Temizliği</h3>
+            <p>Gözenek arındırma ve derinlemesine temizlik.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">35 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Maske Uygulaması</h3>
+            <p>Cilt tipine özel arındırıcı veya nemlendirici maske.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">20 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Kaş Düzeltme</h3>
+            <p>Doğal görünümü koruyan, düzenli kaş şekillendirme.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">10 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Burun/Kulak Temizliği</h3>
+            <p>Wax yöntemiyle konforlu burun ve kulak kılı temizliği.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">10 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="service-panel" data-panel="renk">
+      <div class="service-grid">
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Saç Boyama</h3>
+            <p>Doğal görünümlü tam kapatıcı erkek saç boyası.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">60 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Sakal Boyama</h3>
+            <p>Sakaldaki beyazları doğal tonda kapatan uygulama.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">30 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Ombre Sakal</h3>
+            <p>Uçlara doğru yumuşak geçişli modern sakal rengi.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">45 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Gri Kapatma</h3>
+            <p>Ton üstü ton teknikle doğal gri kapatma.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">50 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Röfle</h3>
+            <p>Saça hareket ve derinlik katan özel teknik renklendirme.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">75 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="service-panel" data-panel="paket">
+      <div class="service-grid">
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Damat Tıraşı &amp; Bakım Paketi</h3>
+            <p>Özel gününüz için kesim, tıraş ve cilt bakımı bir arada.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">90 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Kesim + Sakal Paketi</h3>
+            <p>Saç kesimi ve sakal şekillendirmeyi tek randevuda birleştirin.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">55 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Tam Bakım Paketi</h3>
+            <p>Kesim, sakal ve cilt bakımını içeren kapsamlı paket.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">75 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>VIP Üye Bakımı</h3>
+            <p>Düzenli müşteriler için öncelikli randevu ve genişletilmiş bakım.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">60 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-info">
+            <h3>Baba-Oğul Kesim Paketi</h3>
+            <p>Aynı randevuda baba ve çocuğa özel kesim hizmeti.</p>
+          </div>
+          <div class="service-meta"><span class="service-duration">50 dk</span><button class="service-select-btn" type="button">+</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cart-bar" id="cartBar">
+    <span id="cartBarText">0 hizmet seçildi</span>
+    <a href="iletisim.html" class="btn-primary">İletişime Git →</a>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>&copy; 2026 Anonim Erkek Kuaförü</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
