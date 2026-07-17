@@ -242,6 +242,57 @@ async function fetchCustomers() {
   if (res.status === 401) return unauthorize();
   allCustomers = await res.json();
   drawCustomers();
+  drawByService();
+}
+
+/* ---------------- Hizmete Göre ---------------- */
+
+function drawByService() {
+  const list = document.getElementById("hizmetList");
+  if (!list) return;
+
+  const groups = {};
+  allCustomers.forEach((c) => {
+    const key = (c.sonHizmet || "").trim() || "Belirtilmemiş";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(c);
+  });
+
+  const groupNames = Object.keys(groups).sort((a, b) => groups[b].length - groups[a].length);
+
+  if (!groupNames.length) {
+    list.innerHTML = `<p class="admin-empty">Henüz müşteri profili yok.</p>`;
+    return;
+  }
+
+  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+  list.innerHTML = groupNames.map((name, idx) => {
+    const custs = groups[name];
+    const rows = custs.map((c) => {
+      const status = customerStatus(c);
+      return `
+      <div class="hizmet-cust-row">
+        <div>
+          <div class="hizmet-cust-name">${esc(c.adSoyad)}</div>
+          <div class="hizmet-cust-sub">${esc(c.telefon || "—")} · Son ziyaret: ${fmtDateOnly(c.sonTarih)}</div>
+        </div>
+        <span class="cust-badge ${status.level}">${status.level === "overdue" ? "⚠️ " : ""}${status.label}</span>
+      </div>`;
+    }).join("");
+
+    return `
+    <div class="hizmet-group" data-hizmet-group="${idx}">
+      <div class="hizmet-group-head" data-hizmet-toggle="${idx}">
+        <b>${esc(name)}</b>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="hizmet-group-count">${custs.length} müşteri</span>
+          <span class="hizmet-group-arrow">▾</span>
+        </div>
+      </div>
+      <div class="hizmet-group-body">${rows}</div>
+    </div>`;
+  }).join("");
 }
 
 async function saveCustomer(id) {
@@ -334,5 +385,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const saveBtn = e.target.closest("[data-cust-save]");
     if (saveBtn) saveCustomer(saveBtn.dataset.custSave);
+  });
+
+  document.getElementById("hizmetList").addEventListener("click", (e) => {
+    const toggle = e.target.closest("[data-hizmet-toggle]");
+    if (toggle) {
+      const group = document.querySelector(`[data-hizmet-group="${toggle.dataset.hizmetToggle}"]`);
+      if (group) group.classList.toggle("open");
+    }
   });
 });
