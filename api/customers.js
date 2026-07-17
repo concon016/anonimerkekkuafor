@@ -8,10 +8,10 @@ function toClient(row) {
     messageId: row.message_id,
     adSoyad: row.ad_soyad,
     telefon: row.telefon,
-    sonHizmet: row.son_hizmet,
-    sonTarih: row.son_tarih,
-    odenenUcret: row.odenen_ucret,
     siklikGun: row.siklik_gun,
+    sonHizmet: row.son_hizmet ?? null,
+    sonTarih: row.son_tarih ?? null,
+    sonUcret: row.son_ucret ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -32,29 +32,42 @@ module.exports = async (req, res) => {
   try {
     if (req.method === "GET") {
       if (!requireAdmin(req, res)) return;
-      const rows = await sql`SELECT * FROM customers ORDER BY son_tarih ASC`;
+      const rows = await sql`
+        SELECT c.*, v.hizmet AS son_hizmet, v.tarih AS son_tarih, v.ucret AS son_ucret
+        FROM customers c
+        LEFT JOIN LATERAL (
+          SELECT hizmet, tarih, ucret FROM visits WHERE customer_id = c.id ORDER BY tarih DESC, id DESC LIMIT 1
+        ) v ON true
+        ORDER BY v.tarih ASC NULLS FIRST
+      `;
       return res.status(200).json(rows.map(toClient));
     }
 
     if (req.method === "POST") {
       if (!requireAdmin(req, res)) return;
       const b = req.body || {};
-      if (!b.adSoyad || !b.sonTarih) {
-        return res.status(400).json({ error: "adSoyad ve sonTarih zorunlu." });
+      if (!b.adSoyad || !b.hizmet || !b.tarih) {
+        return res.status(400).json({ error: "adSoyad, hizmet ve tarih zorunlu." });
       }
       const siklik = VALID_SIKLIK.includes(Number(b.siklikGun)) ? Number(b.siklikGun) : 20;
 
-      const rows = await sql`
-        INSERT INTO customers (message_id, ad_soyad, telefon, son_hizmet, son_tarih, odenen_ucret, siklik_gun)
-        VALUES (${b.messageId ?? null}, ${b.adSoyad}, ${b.telefon ?? null}, ${b.sonHizmet ?? null}, ${b.sonTarih}, ${b.odenenUcret ?? null}, ${siklik})
+      const custRows = await sql`
+        INSERT INTO customers (message_id, ad_soyad, telefon, siklik_gun)
+        VALUES (${b.messageId ?? null}, ${b.adSoyad}, ${b.telefon ?? null}, ${siklik})
         RETURNING *
+      `;
+      const customer = custRows[0];
+
+      await sql`
+        INSERT INTO visits (customer_id, hizmet, tarih, ucret)
+        VALUES (${customer.id}, ${b.hizmet}, ${b.tarih}, ${b.ucret ?? null})
       `;
 
       if (b.messageId) {
         await sql`UPDATE messages SET profil_olusturuldu = TRUE WHERE id = ${b.messageId}`;
       }
 
-      return res.status(201).json(toClient(rows[0]));
+      return res.status(201).json(toClient({ ...customer, son_hizmet: b.hizmet, son_tarih: b.tarih, son_ucret: b.ucret ?? null }));
     }
 
     if (req.method === "PATCH") {
@@ -63,23 +76,17 @@ module.exports = async (req, res) => {
       if (!id) return res.status(400).json({ error: "id gerekli." });
       const b = req.body || {};
 
-      const fields = [];
       const current = await sql`SELECT * FROM customers WHERE id = ${id}`;
       if (current.length === 0) return res.status(404).json({ error: "Müşteri bulunamadı." });
       const c = current[0];
 
-      const sonHizmet = b.sonHizmet !== undefined ? b.sonHizmet : c.son_hizmet;
-      const sonTarih = b.sonTarih !== undefined ? b.sonTarih : c.son_tarih;
-      const odenenUcret = b.odenenUcret !== undefined ? b.odenenUcret : c.odenen_ucret;
+      const telefon = b.telefon !== undefined ? b.telefon : c.telefon;
       const siklikGun = b.siklikGun !== undefined
         ? (VALID_SIKLIK.includes(Number(b.siklikGun)) ? Number(b.siklikGun) : c.siklik_gun)
         : c.siklik_gun;
-      const telefon = b.telefon !== undefined ? b.telefon : c.telefon;
 
       const rows = await sql`
-        UPDATE customers
-        SET son_hizmet = ${sonHizmet}, son_tarih = ${sonTarih}, odenen_ucret = ${odenenUcret},
-            siklik_gun = ${siklikGun}, telefon = ${telefon}, updated_at = now()
+        UPDATE customers SET telefon = ${telefon}, siklik_gun = ${siklikGun}, updated_at = now()
         WHERE id = ${id}
         RETURNING *
       `;

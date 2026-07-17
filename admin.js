@@ -2,6 +2,19 @@
 
 const ADMIN_KEY_STORAGE = "aek_admin_key";
 
+const SERVICES = [
+  "Klasik Erkek Kesimi", "Makine Kesim (Fade/Undercut)", "Çocuk Kesimi", "Saç Yıkama & Fön",
+  "Saç Şekillendirme (Styling)", "Klasik Ustura Tıraşı", "Sakal Şekillendirme", "Sakal Bakımı & Yağı",
+  "Bıyık Düzeltme", "Sıcak Havlu Tıraşı", "Yüz Bakımı", "Cilt Temizliği", "Maske Uygulaması",
+  "Kaş Düzeltme", "Burun/Kulak Temizliği", "Saç Boyama", "Sakal Boyama", "Ombre Sakal",
+  "Gri Kapatma", "Röfle", "Damat Tıraşı & Bakım Paketi", "Kesim + Sakal Paketi",
+  "Tam Bakım Paketi", "VIP Üye Bakımı", "Baba-Oğul Kesim Paketi",
+];
+
+function serviceOptions(selected) {
+  return SERVICES.map((s) => `<option value="${s}"${s === selected ? " selected" : ""}>${s}</option>`).join("");
+}
+
 function adminKey() {
   return sessionStorage.getItem(ADMIN_KEY_STORAGE) || "";
 }
@@ -28,6 +41,10 @@ function fmtDateOnly(d) {
   return new Date(d).toLocaleDateString("tr-TR", { dateStyle: "medium" });
 }
 
+function fmtTL(n) {
+  return Number(n).toLocaleString("tr-TR") + " ₺";
+}
+
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -42,8 +59,13 @@ function daysBetween(a, b) {
   return Math.round((b - a) / (1000 * 60 * 60 * 24));
 }
 
+function esc(s) {
+  return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 let allMessages = [];
 let allCustomers = [];
+let allVisits = [];
 
 /* ---------------- Mesajlar ---------------- */
 
@@ -59,28 +81,28 @@ function drawMessages() {
   list.innerHTML = allMessages.map((m) => `
     <div class="msg-row${m.profilOlusturuldu ? " done" : ""}">
       <div class="msg-head">
-        <b>${m.adSoyad}</b>
+        <b>${esc(m.adSoyad)}</b>
         <span class="msg-date">${fmtDate(m.createdAt)}</span>
       </div>
-      <div class="msg-phone">${m.telefon || ""}</div>
-      <div class="msg-body">${m.mesaj}</div>
+      <div class="msg-phone">${esc(m.telefon)}</div>
+      <div class="msg-body">${esc(m.mesaj)}</div>
       <div class="msg-actions">
-        ${m.telefon ? `<a href="tel:${m.telefon}" class="btn-primary-sm" style="background:var(--bg);border:1px solid var(--border);color:var(--text);">Ara</a>` : ""}
+        ${m.telefon ? `<a href="tel:${esc(m.telefon)}" style="background:var(--bg);border:1px solid var(--border);color:var(--text);">Ara</a>` : ""}
         <button class="btn-primary-sm" data-profile-open="${m.id}">${m.profilOlusturuldu ? "Profil Oluşturuldu ✓" : "Profil Oluştur"}</button>
         <button class="btn-del" data-msg-delete="${m.id}">Sil</button>
       </div>
       <div class="profile-form" id="profile-form-${m.id}">
         <div>
           <label>Ad Soyad</label>
-          <input type="text" data-pf-ad="${m.id}" value="${m.adSoyad}">
+          <input type="text" data-pf-ad="${m.id}" value="${esc(m.adSoyad)}">
         </div>
         <div>
           <label>Telefon</label>
-          <input type="text" data-pf-telefon="${m.id}" value="${m.telefon || ""}">
+          <input type="text" data-pf-telefon="${m.id}" value="${esc(m.telefon)}">
         </div>
         <div>
           <label>Son Aldığı Hizmet</label>
-          <input type="text" data-pf-hizmet="${m.id}" placeholder="örn. Saç Kesimi + Sakal Tıraşı">
+          <select data-pf-hizmet="${m.id}">${serviceOptions()}</select>
         </div>
         <div>
           <label>Hizmet Tarihi</label>
@@ -126,7 +148,7 @@ async function deleteMessage(id) {
 async function saveProfileFromMessage(messageId) {
   const ad = document.querySelector(`[data-pf-ad="${messageId}"]`).value.trim();
   const telefon = document.querySelector(`[data-pf-telefon="${messageId}"]`).value.trim();
-  const hizmet = document.querySelector(`[data-pf-hizmet="${messageId}"]`).value.trim();
+  const hizmet = document.querySelector(`[data-pf-hizmet="${messageId}"]`).value;
   const tarih = document.querySelector(`[data-pf-tarih="${messageId}"]`).value;
   const ucret = document.querySelector(`[data-pf-ucret="${messageId}"]`).value;
   const siklik = document.querySelector(`[data-pf-siklik="${messageId}"]`).value;
@@ -143,9 +165,9 @@ async function saveProfileFromMessage(messageId) {
       messageId,
       adSoyad: ad,
       telefon,
-      sonHizmet: hizmet,
-      sonTarih: tarih,
-      odenenUcret: ucret ? Number(ucret) : null,
+      hizmet,
+      tarih,
+      ucret: ucret ? Number(ucret) : null,
       siklikGun: Number(siklik),
     }),
   });
@@ -157,13 +179,14 @@ async function saveProfileFromMessage(messageId) {
   }
   showMsg("Müşteri profili oluşturuldu.", true);
   await fetchMessages();
-  await fetchCustomers();
+  await fetchAll();
   switchTab("musteriler");
 }
 
 /* ---------------- Müşteri Profilleri ---------------- */
 
 function customerStatus(c) {
+  if (!c.sonTarih) return { level: "ok", label: "Ziyaret yok", expected: null };
   const expected = addDays(c.sonTarih, c.siklikGun);
   const today = new Date();
   const diff = daysBetween(today, expected);
@@ -191,46 +214,53 @@ function drawCustomers() {
     return `
     <div class="cust-card${status.level === "overdue" ? " overdue" : ""}">
       <div class="cust-head">
-        <b>${c.adSoyad}</b>
+        <b>${esc(c.adSoyad)}</b>
         <span class="cust-badge ${status.level}">${badgeText}</span>
       </div>
       <div class="cust-grid">
-        <div><div class="l">Telefon</div>${c.telefon || "—"}</div>
-        <div><div class="l">Son Hizmet</div>${c.sonHizmet || "—"}</div>
-        <div><div class="l">Son Ziyaret</div>${fmtDateOnly(c.sonTarih)}</div>
-        <div><div class="l">Ödediği Ücret</div>${c.odenenUcret != null ? c.odenenUcret + " ₺" : "—"}</div>
+        <div><div class="l">Telefon</div>${esc(c.telefon) || "—"}</div>
+        <div><div class="l">Son Hizmet</div>${esc(c.sonHizmet) || "—"}</div>
+        <div><div class="l">Son Ziyaret</div>${c.sonTarih ? fmtDateOnly(c.sonTarih) : "—"}</div>
+        <div><div class="l">Son Ödenen Ücret</div>${c.sonUcret != null ? fmtTL(c.sonUcret) : "—"}</div>
         <div><div class="l">Sıklık</div>${c.siklikGun} günde bir</div>
-        <div><div class="l">Beklenen Ziyaret</div>${fmtDateOnly(status.expected)}</div>
+        <div><div class="l">Beklenen Ziyaret</div>${status.expected ? fmtDateOnly(status.expected) : "—"}</div>
       </div>
       <div class="msg-actions">
-        ${c.telefon ? `<a href="tel:${c.telefon}" style="background:var(--bg);border:1px solid var(--border);color:var(--text);">Ara</a>` : ""}
-        <button class="btn-primary-sm" data-cust-edit-open="${c.id}">Yeni Ziyaret Kaydet / Düzenle</button>
+        ${c.telefon ? `<a href="tel:${esc(c.telefon)}" style="background:var(--bg);border:1px solid var(--border);color:var(--text);">Ara</a>` : ""}
+        <button class="btn-primary-sm" data-cust-edit-open="${c.id}">Yeni Ziyaret Ekle / Düzenle</button>
         <button class="btn-del" data-cust-delete="${c.id}">Sil</button>
       </div>
       <div class="cust-edit" id="cust-edit-${c.id}">
         <div>
           <label>Telefon</label>
-          <input type="text" data-ce-telefon="${c.id}" value="${c.telefon || ""}">
+          <input type="text" data-ce-telefon="${c.id}" value="${esc(c.telefon)}">
         </div>
         <div>
-          <label>Son Aldığı Hizmet</label>
-          <input type="text" data-ce-hizmet="${c.id}" value="${c.sonHizmet || ""}">
-        </div>
-        <div>
-          <label>Ziyaret Tarihi</label>
-          <input type="date" data-ce-tarih="${c.id}" value="${new Date(c.sonTarih).toISOString().slice(0,10)}">
-        </div>
-        <div>
-          <label>Ödediği Ücret (₺)</label>
-          <input type="number" data-ce-ucret="${c.id}" value="${c.odenenUcret != null ? c.odenenUcret : ""}">
-        </div>
-        <div class="cust-edit-full">
-          <select data-ce-siklik="${c.id}" style="flex:1;">
+          <label>Ne Sıklıkla Gelir?</label>
+          <select data-ce-siklik="${c.id}">
             <option value="10"${c.siklikGun === 10 ? " selected" : ""}>10 günde bir</option>
             <option value="20"${c.siklikGun === 20 ? " selected" : ""}>20 günde bir</option>
             <option value="30"${c.siklikGun === 30 ? " selected" : ""}>30 günde bir</option>
           </select>
-          <button class="btn-primary-sm" data-cust-save="${c.id}" style="flex:1;">Kaydet</button>
+        </div>
+        <div class="profile-form-full" style="grid-column:1/-1;">
+          <button class="btn-primary-sm" data-cust-info-save="${c.id}" style="width:100%;padding:8px;">Telefon / Sıklığı Güncelle</button>
+        </div>
+        <div style="grid-column:1/-1;border-top:1px solid var(--border);margin-top:6px;padding-top:12px;font-size:12.5px;color:var(--text-soft);font-weight:600;">Yeni Ziyaret Ekle</div>
+        <div>
+          <label>Hizmet</label>
+          <select data-ce-hizmet="${c.id}">${serviceOptions()}</select>
+        </div>
+        <div>
+          <label>Ziyaret Tarihi</label>
+          <input type="date" data-ce-tarih="${c.id}" value="${todayISO()}">
+        </div>
+        <div>
+          <label>Ödediği Ücret (₺)</label>
+          <input type="number" data-ce-ucret="${c.id}" placeholder="örn. 350">
+        </div>
+        <div class="profile-form-full" style="grid-column:1/-1;">
+          <button class="btn-primary-sm" data-visit-save="${c.id}" style="width:100%;padding:10px;">Ziyareti Kaydet</button>
         </div>
       </div>
     </div>`;
@@ -242,51 +272,99 @@ async function fetchCustomers() {
   if (res.status === 401) return unauthorize();
   allCustomers = await res.json();
   drawCustomers();
-  drawByService();
 }
 
-/* ---------------- Hizmete Göre ---------------- */
+async function saveCustomerInfo(id) {
+  const telefon = document.querySelector(`[data-ce-telefon="${id}"]`).value.trim();
+  const siklik = document.querySelector(`[data-ce-siklik="${id}"]`).value;
+
+  const res = await fetch(`/api/customers?id=${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey() },
+    body: JSON.stringify({ telefon, siklikGun: Number(siklik) }),
+  });
+  if (res.status === 401) return unauthorize();
+  showMsg("Müşteri bilgileri güncellendi.", true);
+  fetchCustomers();
+}
+
+async function saveVisit(customerId) {
+  const hizmet = document.querySelector(`[data-ce-hizmet="${customerId}"]`).value;
+  const tarih = document.querySelector(`[data-ce-tarih="${customerId}"]`).value;
+  const ucret = document.querySelector(`[data-ce-ucret="${customerId}"]`).value;
+
+  if (!tarih) {
+    showMsg("Ziyaret tarihi zorunlu.", false);
+    return;
+  }
+
+  const res = await fetch("/api/visits", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey() },
+    body: JSON.stringify({ customerId, hizmet, tarih, ucret: ucret ? Number(ucret) : null }),
+  });
+  if (res.status === 401) return unauthorize();
+  showMsg("Yeni ziyaret kaydedildi.", true);
+  await fetchAll();
+}
+
+async function deleteCustomer(id) {
+  if (!confirm("Bu müşteri profilini (ve tüm ziyaret geçmişini) silmek istediğine emin misin?")) return;
+  const res = await fetch(`/api/customers?id=${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    headers: { "x-admin-key": adminKey() },
+  });
+  if (res.status === 401) return unauthorize();
+  showMsg("Müşteri silindi.", true);
+  fetchAll();
+}
+
+/* ---------------- Hizmete Göre (+ ciro) ---------------- */
 
 function drawByService() {
   const list = document.getElementById("hizmetList");
   if (!list) return;
 
-  const groups = {};
-  allCustomers.forEach((c) => {
-    const key = (c.sonHizmet || "").trim() || "Belirtilmemiş";
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(c);
-  });
-
-  const groupNames = Object.keys(groups).sort((a, b) => groups[b].length - groups[a].length);
-
-  if (!groupNames.length) {
-    list.innerHTML = `<p class="admin-empty">Henüz müşteri profili yok.</p>`;
+  if (!allVisits.length) {
+    list.innerHTML = `<p class="admin-empty">Henüz kaydedilmiş bir ziyaret yok.</p>`;
+    document.getElementById("hizmetTotal").textContent = "";
     return;
   }
 
-  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const groups = {};
+  allVisits.forEach((v) => {
+    const key = (v.hizmet || "").trim() || "Belirtilmemiş";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(v);
+  });
+
+  const groupNames = Object.keys(groups).sort((a, b) => {
+    const cA = groups[a].reduce((s, v) => s + (Number(v.ucret) || 0), 0);
+    const cB = groups[b].reduce((s, v) => s + (Number(v.ucret) || 0), 0);
+    return cB - cA;
+  });
+
+  const grandTotal = allVisits.reduce((s, v) => s + (Number(v.ucret) || 0), 0);
+  document.getElementById("hizmetTotal").textContent = `Toplam Ciro: ${fmtTL(grandTotal)} · ${allVisits.length} ziyaret`;
 
   list.innerHTML = groupNames.map((name, idx) => {
-    const custs = groups[name];
-    const rows = custs.map((c) => {
-      const status = customerStatus(c);
-      return `
+    const visits = groups[name];
+    const total = visits.reduce((s, v) => s + (Number(v.ucret) || 0), 0);
+    const rows = visits.map((v) => `
       <div class="hizmet-cust-row">
         <div>
-          <div class="hizmet-cust-name">${esc(c.adSoyad)}</div>
-          <div class="hizmet-cust-sub">${esc(c.telefon || "—")} · Son ziyaret: ${fmtDateOnly(c.sonTarih)}</div>
+          <div class="hizmet-cust-name">${esc(v.adSoyad)}</div>
+          <div class="hizmet-cust-sub">${esc(v.telefon) || "—"} · ${fmtDateOnly(v.tarih)}</div>
         </div>
-        <span class="cust-badge ${status.level}">${status.level === "overdue" ? "⚠️ " : ""}${status.label}</span>
-      </div>`;
-    }).join("");
+        <span class="cust-badge ok">${v.ucret != null ? fmtTL(v.ucret) : "—"}</span>
+      </div>`).join("");
 
     return `
     <div class="hizmet-group" data-hizmet-group="${idx}">
       <div class="hizmet-group-head" data-hizmet-toggle="${idx}">
         <b>${esc(name)}</b>
         <div style="display:flex;align-items:center;gap:10px;">
-          <span class="hizmet-group-count">${custs.length} müşteri</span>
+          <span class="hizmet-group-count">${visits.length} ziyaret · ${fmtTL(total)}</span>
           <span class="hizmet-group-arrow">▾</span>
         </div>
       </div>
@@ -295,38 +373,15 @@ function drawByService() {
   }).join("");
 }
 
-async function saveCustomer(id) {
-  const telefon = document.querySelector(`[data-ce-telefon="${id}"]`).value.trim();
-  const hizmet = document.querySelector(`[data-ce-hizmet="${id}"]`).value.trim();
-  const tarih = document.querySelector(`[data-ce-tarih="${id}"]`).value;
-  const ucret = document.querySelector(`[data-ce-ucret="${id}"]`).value;
-  const siklik = document.querySelector(`[data-ce-siklik="${id}"]`).value;
-
-  const res = await fetch(`/api/customers?id=${encodeURIComponent(id)}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json", "x-admin-key": adminKey() },
-    body: JSON.stringify({
-      telefon,
-      sonHizmet: hizmet,
-      sonTarih: tarih,
-      odenenUcret: ucret ? Number(ucret) : null,
-      siklikGun: Number(siklik),
-    }),
-  });
+async function fetchVisits() {
+  const res = await fetch("/api/visits", { headers: { "x-admin-key": adminKey() } });
   if (res.status === 401) return unauthorize();
-  showMsg("Müşteri güncellendi.", true);
-  fetchCustomers();
+  allVisits = await res.json();
+  drawByService();
 }
 
-async function deleteCustomer(id) {
-  if (!confirm("Bu müşteri profilini silmek istediğine emin misin?")) return;
-  const res = await fetch(`/api/customers?id=${encodeURIComponent(id)}`, {
-    method: "DELETE",
-    headers: { "x-admin-key": adminKey() },
-  });
-  if (res.status === 401) return unauthorize();
-  showMsg("Müşteri silindi.", true);
-  fetchCustomers();
+async function fetchAll() {
+  await Promise.all([fetchCustomers(), fetchVisits()]);
 }
 
 /* ---------------- Genel ---------------- */
@@ -340,7 +395,7 @@ function enterPanel() {
   document.getElementById("adminGate").style.display = "none";
   document.getElementById("adminPanel").style.display = "";
   fetchMessages();
-  fetchCustomers();
+  fetchAll();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -383,8 +438,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const saveBtn = e.target.closest("[data-cust-save]");
-    if (saveBtn) saveCustomer(saveBtn.dataset.custSave);
+    const infoSaveBtn = e.target.closest("[data-cust-info-save]");
+    if (infoSaveBtn) return saveCustomerInfo(infoSaveBtn.dataset.custInfoSave);
+
+    const visitSaveBtn = e.target.closest("[data-visit-save]");
+    if (visitSaveBtn) saveVisit(visitSaveBtn.dataset.visitSave);
   });
 
   document.getElementById("hizmetList").addEventListener("click", (e) => {
