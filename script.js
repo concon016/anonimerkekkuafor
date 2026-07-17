@@ -175,13 +175,12 @@ function renderSelectedServices() {
 }
 renderSelectedServices();
 
-// Randevu formu — bu bir portfolyo/demo sitesi, gerçek bir backend'e bağlı değil.
-// Gönderim yalnızca arayüzde simüle edilir, hiçbir yere veri iletilmez.
+// Randevu formu — gerçek backend'e bağlı (bkz. api/messages.js), admin panelinde görünür.
 const contactForm = document.getElementById("contactForm");
 const formStatus = document.getElementById("formStatus");
 
 if (contactForm) {
-  contactForm.addEventListener("submit", (e) => {
+  contactForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const submitBtn = document.getElementById("submitBtn");
     const originalLabel = submitBtn.textContent;
@@ -190,16 +189,39 @@ if (contactForm) {
     formStatus.textContent = "";
     formStatus.className = "form-status";
 
-    setTimeout(() => {
+    const fd = new FormData(contactForm);
+    const selected = getSelectedServices();
+    let message = fd.get("message") || "";
+    if (selected.length) {
+      message = `İlgilendiğim hizmetler: ${selected.join(", ")}\n${message}`;
+    }
+
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fd.get("name"),
+          phone: fd.get("phone"),
+          message,
+          botcheck: fd.get("botcheck") ? true : false,
+        }),
+      });
+      if (!res.ok) throw new Error("Gönderilemedi");
+
       formStatus.textContent = "Randevu talebiniz alındı, en kısa sürede dönüş yapacağız.";
       formStatus.classList.add("success");
       fireConfetti(submitBtn);
       contactForm.reset();
       setSelectedServices([]);
       renderSelectedServices();
+    } catch (err) {
+      formStatus.textContent = "Bir sorun oluştu, lütfen tekrar deneyin veya telefonla ulaşın.";
+      formStatus.classList.add("error");
+    } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalLabel;
-    }, 700);
+    }
   });
 }
 
